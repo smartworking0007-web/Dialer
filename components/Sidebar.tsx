@@ -1,4 +1,8 @@
 "use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 import { useState } from "react";
 import {
   LayoutDashboard,
@@ -44,7 +48,7 @@ export default function Sidebar({
           {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
         {/* --- Header Section (Money King Logo) --- */}
-        <div className="flex items-center justify-between mb-10 overflow-hidden">
+        <div className="flex items-center justify-between mb-10 pb-4 border-b-2 border-white/30 overflow-hidden">
           <div className="flex items-center gap-3">
             <PhoneCall size={24} className="animate-bounceshrink-0" />
             {!isCollapsed && (
@@ -52,6 +56,7 @@ export default function Sidebar({
                 Money King.
               </h2>
             )}
+            
           </div>
 
           {/* Mobile Close Button */}
