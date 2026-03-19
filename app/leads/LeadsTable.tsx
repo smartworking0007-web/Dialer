@@ -1,41 +1,75 @@
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
+'use client';
+import { useState, useEffect } from 'react';
+import { Phone, MapPin } from 'lucide-react';
+import { useDialer } from '@/context/DialerContext';
 
-const leads = [
-  { id: 1, name: 'Robert Fox', phone: '(201) 555-0124', status: 'New', source: 'Web' },
-  { id: 2, name: 'Jane Cooper', phone: '(302) 555-0107', status: 'Follow-up', source: 'Facebook' },
-  { id: 3, name: 'Wade Warren', phone: '(408) 555-0113', status: 'Interested', source: 'Excel' },
-];
+interface LeadData {
+  name: string;
+  phone: string;
+  city: string;
+  source: string;
+}
 
-export default function LeadsTable() {
+interface LeadsTableProps {
+  leads: LeadData[];
+  onSelectionChange: (count: number) => void;
+  onCall?: (phone: string) => void; // Fixed: Added missing prop definition
+}
+
+export default function LeadsTable({ leads, onSelectionChange, onCall }: LeadsTableProps) {
+  const { triggerCall } = useDialer();
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    onSelectionChange(selectedIds.size);
+  }, [selectedIds, onSelectionChange]);
+
+  const handleActionCall = (phone: string) => {
+    if (onCall) onCall(phone);
+    triggerCall(phone);
+  };
+
   return (
-    <Card className="p-0 overflow-hidden">
-      <table className="w-full text-left">
+    <div className="overflow-x-auto no-scrollbar">
+      <table className="w-full text-left border-collapse">
         <thead className="bg-slate-50 border-b border-slate-200">
           <tr>
-            <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Lead Name</th>
-            <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Phone Number</th>
-            <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Status</th>
-            <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-right">Action</th>
+            <th className="px-4 py-4 w-10 text-center text-slate-400">#</th>
+            <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Lead details</th>
+            <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Contact Number</th>
+            <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase text-right">Action</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
-          {leads.map((lead) => (
-            <tr key={lead.id} className="hover:bg-slate-50 transition-colors">
-              <td className="px-6 py-4 font-semibold">{lead.name}</td>
-              <td className="px-6 py-4 text-slate-600">{lead.phone}</td>
-              <td className="px-6 py-4">
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold ">
-                  {lead.status}
-                </span>
+          {leads.map((lead, index) => (
+            <tr key={index} className="hover:bg-slate-50 transition-colors">
+              <td className="px-4 py-4 text-center">
+                <input type="checkbox" checked={selectedIds.has(index)} onChange={() => {
+                  const newSet = new Set(selectedIds);
+                  if (newSet.has(index)) newSet.delete(index); else newSet.add(index);
+                  setSelectedIds(newSet);
+                }} className="rounded border-slate-300 text-brand-primary cursor-pointer" />
               </td>
+              <td className="px-6 py-4">
+                <p className="text-sm font-bold text-slate-800 uppercase tracking-tight">{lead.name}</p>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <MapPin size={10} className="text-slate-400" />
+                  <p className="text-[10px] text-slate-400 font-bold uppercase">{lead.city} • {lead.source}</p>
+                </div>
+              </td>
+              <td className="px-6 py-4 text-slate-600 font-mono text-sm tracking-widest">{lead.phone}</td>
               <td className="px-6 py-4 text-right">
-                <Button variant="secondary" className="py-1 text-xs">Call</Button>
+                <button 
+                  onClick={() => handleActionCall(lead.phone)}
+                  className="bg-brand-primary text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 ml-auto hover:opacity-90 shadow-lg active:scale-95 transition-all"
+                >
+                  <Phone size={12} fill="currentColor" /> CALL
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-    </Card>
+    </div>
   );
 }
