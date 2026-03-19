@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 type Campaign = {
   id: number;
   name: string;
@@ -19,9 +21,12 @@ const campaigns: Campaign[] = [
 ];
 
 export default function CampaignTable() {
+  const router = useRouter();
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      {/* Table Wrapper for Horizontal Scroll on Mobile */}
+
+      {/* Table */}
       <div className="overflow-x-auto no-scrollbar">
         <table className="w-full text-sm text-left">
           <thead className="bg-slate-50 text-slate-500 border-b border-slate-200">
@@ -39,25 +44,46 @@ export default function CampaignTable() {
           <tbody className="divide-y divide-slate-100">
             {campaigns.map((item) => (
               <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="p-4 font-bold text-slate-800">{item.name}</td>
+
+                {/* Name */}
+                <td className="p-4 font-bold text-slate-800">
+                  {item.name}
+                </td>
+
+                {/* Type */}
                 <td className="p-4">
                   <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[11px] font-bold">
                     {item.type}
                   </span>
                 </td>
-                <td className="p-4 font-medium text-slate-600">{item.leads.toLocaleString()}</td>
-                <td className="p-4 font-medium text-slate-600">{item.calls.toLocaleString()}</td>
+
+                {/* Leads */}
+                <td className="p-4 font-medium text-slate-600">
+                  {item.leads.toLocaleString()}
+                </td>
+
+                {/* Calls */}
+                <td className="p-4 font-medium text-slate-600">
+                  {item.calls.toLocaleString()}
+                </td>
+
+                {/* Success */}
                 <td className="p-4">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-brand-primary">{item.success}%</span>
+                    <span className="font-bold text-brand-primary">
+                      {item.success}%
+                    </span>
+
                     <div className="w-12 bg-slate-100 h-1.5 rounded-full hidden sm:block">
-                      <div 
-                        className="bg-brand-primary h-full rounded-full" 
+                      <div
+                        className="bg-brand-primary h-full rounded-full"
                         style={{ width: `${item.success}%` }}
-                      ></div>
+                      />
                     </div>
                   </div>
                 </td>
+
+                {/* Status */}
                 <td className="p-4">
                   {item.status === "Active" ? (
                     <span className="bg-emerald-50 text-brand-success px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 w-fit">
@@ -71,31 +97,55 @@ export default function CampaignTable() {
                     </span>
                   )}
                 </td>
+
+                {/* Actions */}
                 <td className="p-4">
                   <div className="flex gap-2">
-                    <button className="p-1.5 border border-slate-200 rounded-lg text-slate-400 hover:text-brand-primary hover:bg-blue-50 transition-all">
+
+                    {/* VIEW */}
+                    <button
+                      onClick={() => router.push(`/campaigns/${item.id}`)}
+                      className="p-1.5 border border-slate-200 rounded-lg text-slate-400 hover:text-brand-primary hover:bg-blue-50 transition-all"
+                    >
                       View
                     </button>
-                    <button className="p-1.5 border border-slate-200 rounded-lg text-slate-400 hover:text-brand-warning hover:bg-amber-50 transition-all">
+
+                    {/* EDIT */}
+                    <button
+                      onClick={() => router.push(`/campaigns/edit/${item.id}`)}
+                      className="p-1.5 border border-slate-200 rounded-lg text-slate-400 hover:text-brand-warning hover:bg-amber-50 transition-all"
+                    >
                       Edit
                     </button>
+
                   </div>
                 </td>
+
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination Footer */}
+      {/* Footer */}
       <div className="flex items-center justify-between p-4 bg-slate-50/50 border-t border-slate-200 text-xs font-bold text-slate-400">
         <p>SHOWING 5 OF 24 CAMPAIGNS</p>
+
         <div className="flex gap-2">
-          <button className="px-3 py-1.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50">Prev</button>
-          <button className="px-3 py-1.5 bg-brand-primary text-white rounded-lg shadow-sm">1</button>
-          <button className="px-3 py-1.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50">Next</button>
+          <button className="px-3 py-1.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50">
+            Prev
+          </button>
+
+          <button className="px-3 py-1.5 bg-brand-primary text-white rounded-lg shadow-sm">
+            1
+          </button>
+
+          <button className="px-3 py-1.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50">
+            Next
+          </button>
         </div>
       </div>
+
     </div>
   );
 }
